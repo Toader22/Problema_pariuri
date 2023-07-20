@@ -1,0 +1,23 @@
+{
+  "name": "problema_pariuri",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@apollo/server": "^4.7.5",
+    "apollo-server": "^3.12.0",
+    "graphql": "^16.7.1",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-tag": "^2.12.6",
+    "node-cache": "^5.1.2",
+    "uuid": "^9.0.0"
+  }
+}
