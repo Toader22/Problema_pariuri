@@ -1,14 +1,19 @@
 import gql from 'graphql-tag';
 
 const typeDefs = gql`
-    type Query {
-        session(customerId: Int!): String
-        highStakes(betOfferId: Int!): String
-    }
+  type Stake {
+    customerId: Int!
+    stake: Int!
+  }
 
-    type Mutation {
-        postStake(betOfferId: Int!, stake: Int!, sessionKey: String!): Boolean
-    }
+  type Query {
+    session(customerId: Int!): String
+    highStakes(betOfferId: Int!): [Stake!]
+  }
+
+  type Mutation {
+    postStake(betOfferId: Int!, stake: Int!, sessionKey: String!): Boolean
+  }
 `;
 
 export default typeDefs;

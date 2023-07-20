@@ -16,7 +16,10 @@ const POST_STAKE = gql`
 
 const GET_HIGH_STAKES = gql`
   query HighStakes($betOfferId: Int!) {
-    highStakes(betOfferId: $betOfferId)
+    highStakes(betOfferId: $betOfferId) {
+      customerId
+      stake
+    }
   }
 `;
 
@@ -44,7 +47,6 @@ function LiveStakesAndLoadTest() {
       postStake({ variables: { betOfferId, stake, sessionKey: sessionData.session } });
     }
   }, [betOfferIds, postStake, sessionData, sessionError]);
-  
 
   useEffect(() => {
     if (postStakeError) {
@@ -56,8 +58,6 @@ function LiveStakesAndLoadTest() {
       postStake({ variables: { betOfferId, stake, sessionKey } });
     }
   }, [betOfferIds, postStake, sessionKey, postStakeError]);
-  
-  
 
   if (highStakesError) {
     console.error('Error querying for high stakes:', highStakesError);
@@ -79,11 +79,17 @@ function LiveStakesAndLoadTest() {
           </option>
         ))}
       </select>
-      <p>{highStakesData && highStakesData.highStakes !== '' ? highStakesData.highStakes : 'No stakes yet'}</p>
+      {highStakesData && highStakesData.highStakes.length > 0 ? (
+        <ul>
+          {highStakesData.highStakes.map((stakeObj, index) => (
+            <li key={index}>Customer ID: {stakeObj.customerId}, Stake: {stakeObj.stake}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No stakes yet</p>
+      )}
     </div>
   );
 }
 
-
-//??
 export default LiveStakesAndLoadTest;

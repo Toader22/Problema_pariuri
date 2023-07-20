@@ -14,19 +14,27 @@ const resolvers = {
     },
     highStakes: (_, { betOfferId }) => {
       const stakes = stakesCache.get(`offer_${betOfferId}`) || [];
-      stakes.sort((a, b) => b - a);
-      const topStakes = stakes.slice(0, 20);
-      return topStakes.join(",");
+      stakes.sort((a, b) => b.stake - a.stake);
+      const stakesMap = new Map();
+      stakes.forEach(stakeObj => {
+        if (!stakesMap.has(stakeObj.customerId)) {
+          stakesMap.set(stakeObj.customerId, stakeObj);
+        }
+      });
+      const topStakes = Array.from(stakesMap.values()).slice(0, 20);
+      return topStakes;
     }
   },
   Mutation: {
     postStake: (_, { betOfferId, stake, sessionKey }) => {
       console.log(`Attempting to post stake: ${stake} for offer: ${betOfferId}`);
       let isValidSession = false;
+      let customerId;
       const keys = sessionCache.keys();
       for (let key of keys) {
         if (sessionCache.get(key) === sessionKey) {
           isValidSession = true;
+          customerId = key.split('_')[1]; 
           break;
         }
       }
@@ -35,14 +43,12 @@ const resolvers = {
       }
 
       const currentStakes = stakesCache.get(`offer_${betOfferId}`) || [];
-      currentStakes.push(stake);
-      currentStakes.sort((a, b) => b - a);
-      const topStakes = currentStakes.slice(0, 20);
-      console.log(`Top 20 stakes for offer ${betOfferId} in decreasing order:`, topStakes);
+      const stakeObj = { stake, customerId: Number(customerId) };
+      currentStakes.push(stakeObj);
+      currentStakes.sort((a, b) => b.stake - a.stake);
+      console.log(`Updated stakes for offer ${betOfferId}:`, currentStakes);
 
       stakesCache.set(`offer_${betOfferId}`, currentStakes);
-
-      console.log(`Updated stakes for offer ${betOfferId}:`, currentStakes);
 
       return true;
     },
